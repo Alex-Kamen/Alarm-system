@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "ObjectSettings"
+  name: "ObjectSettings",
 }
 </script>
 
