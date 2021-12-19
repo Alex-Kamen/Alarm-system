@@ -1,7 +1,7 @@
 <template>
   <div class="workingArea">
     <working-tree/>
-    <working-field/>
+    <working-field :canvas-id="'canvas-one'"/>
     <object-settings/>
   </div>
 </template>

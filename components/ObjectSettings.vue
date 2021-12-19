@@ -20,7 +20,7 @@ export default {
 .objectSettings__title {
   font-size: 14px;
   font-weight: normal;
-  font-family: Arial;
+  font-family: Arial sans-serif;
   border-bottom: 1px solid black;
   padding: 15px 0 15px 20px;
   margin: 0;

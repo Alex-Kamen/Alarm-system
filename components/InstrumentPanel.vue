@@ -1,40 +1,32 @@
 <template>
-  <div class="instumentPanel">
-    <object-item :icon="'ItinerarySensorIcon'"></object-item>
-    <object-item :icon="'PiezoelectricSensorIcon'"></object-item>
-    <object-item :icon="'AcousticSensorIcon'"></object-item>
+  <div class="instumentPanel" data-app>
+    <object-item :settings="sensorsList.ItinerarySensor"></object-item>
+    <object-item :settings="sensorsList.PiezoelectricSensor"></object-item>
+    <object-item :settings="sensorsList.AcousticSensor"></object-item>
     <multiple-object-item
-      :icon="'ActiveSingleBlockSensorIcon'"
-      :items="[
-        'ActiveSingleBlockSensorIcon',
-        'ActiveTwoBlockSensorIcon',
-        'InfraredVolumetricSensorIcon',
-        'InfraredSurfaceSensorIcon',
-        'InfraredLinearSensorBlock',
-      ]"
+      :icon="sensorsList.opticalElectronic.icon"
+      :title="sensorsList.opticalElectronic.title"
+      :items="sensorsList.opticalElectronic.list"
     ></multiple-object-item>
-    <object-item :icon="'CombinedSensorIcon'"></object-item>
+    <object-item :settings="sensorsList.CombinedSensor"></object-item>
     <multiple-object-item
-      :icon="'SingleBlockSensorIcon'"
-      :items="[
-        'SingleBlockSensorIcon',
-        'TwoBlockSensorIcon',
-      ]"
+      :icon="sensorsList.RadioWave.icon"
+      :title="sensorsList.RadioWave.title"
+      :items="sensorsList.RadioWave.list"
     ></multiple-object-item>
     <multiple-object-item
-      :icon="'ManualSensorIcon'"
-      :items="[
-        'ManualSensorIcon',
-        'FootSensorIcon',
-      ]"
+      :icon="sensorsList.Guard.icon"
+      :title="sensorsList.Guard.title"
+      :items="sensorsList.Guard.list"
     ></multiple-object-item>
-    <object-item :icon="'ElectricalContactSensorIcon'"></object-item>
+    <object-item :settings="sensorsList.ElectricalContactSensor"></object-item>
   </div>
 </template>
 
 <script>
 import ObjectItem from "./objectItems/ObjectItem";
 import MultipleObjectItem from "./objectItems/MultipleObjectItem";
+import Object from "../models/Object";
 
 export default {
   name: "InstrumentPanel",
@@ -42,6 +34,12 @@ export default {
   components: {
     MultipleObjectItem,
     ObjectItem
+  },
+
+  data() {
+    return {
+      sensorsList: Object.sensorsList
+    }
   }
 }
 </script>
