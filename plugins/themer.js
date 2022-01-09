@@ -18,6 +18,12 @@ import CombinedSensorIcon from "../components/icons/sensors/CombinedSensorIcon";
 import ElectricalContactSensorIcon from "../components/icons/sensors/ElectricalContactSensorIcon";
 import ItinerarySensorIcon from "../components/icons/sensors/ItinerarySensorIcon";
 import PiezoelectricSensorIcon from "../components/icons/sensors/PiezoelectricSensorIcon";
+import Column from "../components/icons/buildings/Column";
+import DoubleDoor from "../components/icons/buildings/DoubleDoor";
+import DoubleWindow from "../components/icons/buildings/DoubleWindow";
+import SingleDoor from "../components/icons/buildings/SingleDoor";
+import SingleWindow from "../components/icons/buildings/SingleWindow";
+import Wall from "../components/icons/buildings/Wall";
 
 Vue.use(Vuetify);
 
@@ -73,8 +79,25 @@ export default (ctx) => {
         PiezoelectricSensorIcon: {
           component: PiezoelectricSensorIcon
         },
-      }
-      ,
+        Column: {
+          component: Column
+        },
+        DoubleDoor: {
+          component: DoubleDoor
+        },
+        DoubleWindow: {
+          component: DoubleWindow
+        },
+        SingleDoor: {
+          component: SingleDoor
+        },
+        SingleWindow: {
+          component: SingleWindow
+        },
+        Wall: {
+          component: Wall
+        }
+      },
     },
   })
 

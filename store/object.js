@@ -16,24 +16,15 @@ export const mutations = {
   },
 
   activateObjectOnList(state, [index, status]) {
-    state.objectList.sensors.forEach((object, objectIndex) => {
-      if (index === objectIndex) object.active = status;
-    })
+    state.objectList.sensors[index].active = status;
   },
 
-  hoverObjectOnList(state, [index, status]) {
-    state.objectList.sensors.forEach((object, objectIndex) => {
-      if (index === objectIndex) object.hover = status;
-    })
-  },
+  changePosition(state, [index, currentX, currentY, prevX, prevY]) {
+    state.objectList.sensors[index].moveEffect(currentX, currentY, prevX, prevY);
 
-  changePosition(state, [index, x, y]) {
-    state.objectList.sensors.forEach((object, objectIndex) => {
-      if (index === objectIndex) {
-        object.x = x;
-        object.y = y;
-      }
-    })
+    let tmp = state.objectList.sensors[index];
+    state.objectList.sensors[index] = state.objectList.sensors[state.objectList.sensors.length-1];
+    state.objectList.sensors[state.objectList.sensors.length-1] = tmp;
   },
 };
 
@@ -41,5 +32,5 @@ export const actions = {};
 
 export const getters = {
   activeObject: (state) => state.activeObject,
-  objectList: (state) => state.objectList
+  objectList: (state) => state.objectList,
 };

@@ -20,13 +20,18 @@
       :items="sensorsList.Guard.list"
     ></multiple-object-item>
     <object-item :settings="sensorsList.ElectricalContactSensor"></object-item>
+    <multiple-object-item
+      :icon="buildingList.icon"
+      :title="buildingList.title"
+      :items="buildingList.list"
+    ></multiple-object-item>
   </div>
 </template>
 
 <script>
 import ObjectItem from "./objectItems/ObjectItem";
 import MultipleObjectItem from "./objectItems/MultipleObjectItem";
-import Object from "../models/Object";
+import ObjectData from "../models/Object";
 
 export default {
   name: "InstrumentPanel",
@@ -38,7 +43,8 @@ export default {
 
   data() {
     return {
-      sensorsList: Object.sensorsList
+      sensorsList: ObjectData.sensorsList,
+      buildingList: ObjectData.buildingsList
     }
   }
 }

@@ -1,6 +1,10 @@
 <template>
   <div class="workingField">
-    <canvas v-on:mouseup="mouseUp" @mousemove="rerender" @mousedown="mouseEvents.down=true"></canvas>
+    <canvas
+      v-on:mouseup="mouseUp"
+      @mousemove="rerender"
+      @mousedown="mouseDown"
+    ></canvas>
   </div>
 </template>
 
@@ -19,6 +23,8 @@ import CombinedSensorIcon from '@/static/icons/sensor/9.png';
 import ElectricalContactSensorIcon from '@/static/icons/sensor/14.png';
 import ItinerarySensorIcon from '@/static/icons/sensor/1.png';
 import PiezoelectricSensorIcon from '@/static/icons/sensor/2.png';
+import {CircleSensor} from "../models/Sensor";
+import {Column, DoubleDoor, SingleDoor, SingleWindow, DoubleWindow, Wall} from "../models/Building";
 
 const paper = require('paper');
 
@@ -46,6 +52,18 @@ export default {
 
     mouseEvents: {
       down: false,
+    },
+
+    keyboardEvent: {
+      Control: false
+    },
+
+    createWall: {
+      status: false,
+      startX: null,
+      startY: null,
+      endX: null,
+      endY: null
     }
   }),
   methods: {
@@ -53,23 +71,85 @@ export default {
       this.scope.project.activeLayer.removeChildren();
     },
 
+    keyDown(event) {
+      this.keyboardEvent[event.key] = true;
+    },
+
+    keyUp(event) {
+      this.keyboardEvent[event.key] = false;
+    },
+
     mouseUp(event) {
-      this.mouseEvents.down = false;
-      let object = Object.assign({}, this.$store.getters['object/activeObject']);
-      if (object.icon) {
-        object.x = event.offsetX;
-        object.y = event.offsetY;
-        this.$store.commit('object/addObject', ['sensors', object])
-        this.$store.commit('object/activateObject', {})
+      if (this.createWall.status) {
+        let x = Math.min(this.createWall.startX, this.createWall.endX);
+        let y = Math.min(this.createWall.startY, this.createWall.endY);
+        let width = Math.abs(this.createWall.startY - this.createWall.endY);
+        let height = Math.abs(this.createWall.startX - this.createWall.endX);
+
+        if (width === 0) width = 10;
+        if (height === 0) height = 10;
+
+        this.$store.commit('object/addObject', [
+          'sensors',
+          new Wall(x, y, width, height)
+        ]);
+        this.createWall.status = false;
       }
+
+      this.mouseEvents.down = {};
+      let object = this.$store.getters['object/activeObject'];
+      if (object.type === 'sensor') {
+        this.$store.commit('object/addObject', [
+          'sensors',
+          new CircleSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.opacityColor, object.color)
+        ]);
+      } else if (object.icon === 'DoubleDoor') {
+        this.$store.commit('object/addObject', [
+          'sensors',
+          new DoubleDoor(event.offsetX, event.offsetY, 50, 100)
+        ]);
+      } else if (object.icon === 'Column') {
+        this.$store.commit('object/addObject', [
+          'sensors',
+          new Column(event.offsetX, event.offsetY, 50, 50)
+        ]);
+      } else if (object.icon === 'SingleDoor') {
+        this.$store.commit('object/addObject', [
+          'sensors',
+          new SingleDoor(event.offsetX, event.offsetY, 50, 50)
+        ]);
+      } else if (object.icon === 'SingleWindow') {
+        this.$store.commit('object/addObject', [
+          'sensors',
+          new SingleWindow(event.offsetX, event.offsetY, 10, 50)
+        ]);
+      } else if (object.icon === 'DoubleWindow') {
+        this.$store.commit('object/addObject', [
+          'sensors',
+          new DoubleWindow(event.offsetX, event.offsetY, 10, 100)
+        ]);
+      } else if (object.icon === 'Wall') {
+        this.createWall = {
+          status: true,
+          startX: event.offsetX,
+          startY: event.offsetY,
+          endX: null,
+          endY: null
+        };
+
+        this.mouseEvents.down = {
+          status: true,
+          x: event.offsetX,
+          y: event.offsetY,
+        };
+      }
+
+      this.$store.commit('object/activateObject', {});
 
       let objectList = this.$store.getters['object/objectList'];
 
       objectList.sensors.forEach((object, index) => {
-        let r = Math.sqrt(Math.pow(event.offsetX - object.x, 2) + Math.pow(event.offsetY - object.y,  2));
-        if (r <= 20) {
-          this.$store.commit('object/activateObjectOnList', [index, !object.active]);
-        } else {
+        if (!object.isHover(event.offsetX, event.offsetY) && !this.keyboardEvent.Control) {
           this.$store.commit('object/activateObjectOnList', [index, false]);
         }
       })
@@ -77,48 +157,76 @@ export default {
       this.rerender(event);
     },
 
-    drowObject(object) {
-      if (object.hover) {
-        let circle = new paper.Path.Circle(new paper.Point(object.x, object.y), 21);
-        circle.strokeWidth = 3;
-        circle.strokeColor = '#101165';
-        circle.fillColor = '#101165';
-      }
+    mouseDown(event) {
+      this.mouseEvents.down = {
+        status: true,
+        x: event.offsetX,
+        y: event.offsetY,
+      };
 
-      if (object.active) {
-        let circle = new paper.Path.Circle(new paper.Point(object.x, object.y), object.area);
-        circle.strokeWidth = 3;
-        circle.strokeColor = object.color;
-        circle.fillColor = object.opacityColor;
-      }
+      let objectList = this.$store.getters['object/objectList'];
 
-      let image = new Image(1, 1);
-      image.src = this.objects[object.icon]
-      let raster = new paper.Raster(image, new paper.Point(100, 100));
-      raster.scale(0.4);
-      raster.position.x += object.x;
-      raster.position.y += object.y;
+      objectList.sensors.forEach((object, index) => {
+        if (object.isHover(event.offsetX, event.offsetY)) {
+          this.$store.commit('object/activateObjectOnList', [index, true]);
+        }
+      })
     },
 
     rerender(event) {
       this.reset();
+
+      if (this.createWall.status) {
+        let path = new paper.Path();
+
+        if (Math.abs(this.mouseEvents.down.x - event.offsetX) >= Math.abs(this.mouseEvents.down.y - event.offsetY)) {
+          path.add(new paper.Point(this.createWall.startX, this.createWall.startY));
+          path.add(new paper.Point(event.offsetX, this.createWall.startY));
+          this.createWall.endX = event.offsetX;
+          this.createWall.endY = this.createWall.startY;
+        } else {
+          path.add(new paper.Point(this.createWall.startX, this.createWall.startY));
+          path.add(new paper.Point(this.createWall.startX, event.offsetY));
+          this.createWall.endX = this.createWall.startX;
+          this.createWall.endY = event.offsetY;
+        }
+
+        path.strokeColor = 'black';
+        path.strokeWidth = '10';
+      }
+
       let objectList = this.$store.getters['object/objectList'];
 
       objectList.sensors.forEach((object, index) => {
-        let r = Math.sqrt(Math.pow(event.offsetX - object.x, 2) + Math.pow(event.offsetY - object.y, 2));
-        if (r <= 20) {
-          if (this.mouseEvents.down) this.$store.commit('object/changePosition', [index, event.offsetX, event.offsetY]);
-          this.$store.commit('object/hoverObjectOnList', [index, true]);
-        } else {
-          this.$store.commit('object/hoverObjectOnList', [index, false]);
+        if (!this.createWall.status) {
+          if (object.isHover(event.offsetX, event.offsetY)) {
+            object.hoverEffect(event.offsetX, event.offsetY);
+          }
+
+          if (this.mouseEvents.down.status && object.active) {
+            this.$store.commit(
+              'object/changePosition',
+              [index, event.offsetX, event.offsetY, this.mouseEvents.down.x, this.mouseEvents.down.y]
+            );
+
+            this.mouseEvents.down.x = event.offsetX;
+            this.mouseEvents.down.y = event.offsetY;
+          }
+
+          if (object.active) {
+            object.activeEffect();
+          }
         }
-        this.drowObject(object);
+
+        object.drawObject();
       })
     }
   },
   mounted() {
     this.scope = new paper.PaperScope();
     this.scope.setup(document.querySelector('canvas'));
+    document.addEventListener('keydown', this.keyDown);
+    document.addEventListener('keyup', this.keyUp);
   }
 }
 </script>

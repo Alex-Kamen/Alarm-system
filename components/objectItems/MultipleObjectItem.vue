@@ -37,13 +37,6 @@ export default {
     items: Array,
     title: String
   },
-
-  methods: {
-    activateObject() {
-      this.$store.commit('object/activateObject', {abc: 1123});
-      console.log(this.$store.getters['object/activeObject'])
-    }
-  }
 }
 </script>
 

@@ -32,6 +32,7 @@ export default {
       object.icon = this.settings.icon;
       object.color = this.settings.color;
       object.opacityColor = this.settings.opacityColor;
+      object.type = this.settings.type;
       this.$store.commit('object/activateObject', object);
     }
   }

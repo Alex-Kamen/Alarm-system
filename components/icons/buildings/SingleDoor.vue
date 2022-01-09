@@ -1,0 +1,32 @@
+<template>
+  <svg
+    width="100mm"
+    height="100mm"
+    viewBox="0 0 100 100"
+    version="1.1"
+    id="svg1725"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:svg="http://www.w3.org/2000/svg">
+    <defs
+      id="defs1722" />
+    <g
+      id="layer1">
+      <path
+        style="fill:#ffffff;stroke:#000000;stroke-width:1.5"
+        id="path1832"
+        d="M -0.75704956,0.75520241 A 98.545692,98.45137 0 0 1 -99.302742,99.206573 V 0.75520241 Z"
+        transform="matrix(-4.6397846e-4,-0.99999989,0.99999987,-5.1611881e-4,0,0)" />
+    </g>
+  </svg>
+</template>
+
+<script>
+export default {
+  name: "SingleDoor"
+}
+</script>
+
+<style scoped>
+
+</style>
+

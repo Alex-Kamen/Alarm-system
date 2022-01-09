@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <v-app data-app>
     <tabs-panel/>
     <instrument-panel/>
     <working-area/>
-  </div>
+  </v-app>
 </template>
 
 <script>
@@ -24,5 +24,10 @@ export default {
 html, body {
   margin: 0;
   padding: 0;
+  overflow: hidden;
+}
+
+.v-menu__content {
+  position: absolute;
 }
 </style>
