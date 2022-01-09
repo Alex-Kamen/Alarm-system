@@ -15,6 +15,8 @@ export class Building extends Element {
 export class Column extends Building {
   constructor(x, y, height, width) {
     super(x, y, height, width);
+    this.treeName = 'Колонна';
+    this.treeIcon = 'Column';
   }
 
   isHover(cursorX, cursorY) {
@@ -54,6 +56,8 @@ export class Column extends Building {
 export class DoubleDoor extends Building {
   constructor(x, y, height, width) {
     super(x, y, height, width);
+    this.treeName = 'Двустворчатая дверь';
+    this.treeIcon = 'DoubleDoor';
   }
 
   isHover(cursorX, cursorY) {
@@ -111,6 +115,8 @@ export class DoubleDoor extends Building {
 export class SingleDoor extends Building {
   constructor(x, y, height, width) {
     super(x, y, height, width);
+    this.treeName = 'Одностворчатая дверь';
+    this.treeIcon = 'SingleDoor';
   }
 
   isHover(cursorX, cursorY) {
@@ -155,6 +161,8 @@ export class SingleDoor extends Building {
 export class SingleWindow extends Building {
   constructor(x, y, height, width) {
     super(x, y, height, width);
+    this.treeName = 'Одностворчатое окно';
+    this.treeIcon = 'SingleWindow';
   }
 
   isHover(cursorX, cursorY) {
@@ -196,6 +204,8 @@ export class SingleWindow extends Building {
 export class DoubleWindow extends Building {
   constructor(x, y, height, width) {
     super(x, y, height, width);
+    this.treeName = 'Двустворчатое окно';
+    this.treeIcon = 'DoubleWindow';
   }
 
   isHover(cursorX, cursorY) {
@@ -246,6 +256,8 @@ export class DoubleWindow extends Building {
 export class Wall extends Building {
   constructor(startX, startY, endX, endY) {
     super(startX, startY, endX, endY);
+    this.treeName = 'Стена';
+    this.treeIcon = 'Wall';
   }
 
   isHover(cursorX, cursorY) {

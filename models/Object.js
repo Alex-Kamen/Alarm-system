@@ -94,7 +94,7 @@ export default {
       ]
     },
     CombinedSensor: {
-      title: 'Комбинирванный',
+      title: 'Комбинированный',
       color: '#E58934',
       opacityColor: "rgba(229,137,52,0.5)",
       icon: 'CombinedSensorIcon',
@@ -141,7 +141,7 @@ export default {
       ]
     },
     ElectricalContactSensor: {
-      title: 'Точечный электроконтакный',
+      title: 'Точечный электроконтактный',
       color: "#E5349E",
       opacityColor: "rgba(229,52,158,0.5)",
       icon: 'ElectricalContactSensorIcon',

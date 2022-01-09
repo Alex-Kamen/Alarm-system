@@ -1,7 +1,7 @@
 <template>
   <div class="workingArea">
-    <working-tree/>
-    <working-field :canvas-id="'canvas-one'"/>
+    <working-tree @rerender="rerender()"/>
+    <working-field :canvas-id="'canvas-one'" ref="canvas"/>
     <object-settings/>
   </div>
 </template>
@@ -18,6 +18,12 @@ export default {
     WorkingTree,
     ObjectSettings,
     WorkingField
+  },
+
+  methods: {
+    rerender() {
+      this.$refs.canvas.rerender();
+    }
   }
 }
 </script>

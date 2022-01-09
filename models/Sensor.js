@@ -2,9 +2,11 @@ import {Element} from "./Object";
 const paper = require('paper');
 
 export class Sensor extends Element {
-  constructor(x, y, icon, opacityColor, color, radius) {
+  constructor(x, y, icon, treeIcon, treeName, opacityColor, color, radius) {
     super(x, y);
     this.icon = icon;
+    this.treeIcon = treeIcon;
+    this.treeName = treeName;
     this.opacityColor = opacityColor;
     this.color = color;
     this.radius = radius;
@@ -12,8 +14,8 @@ export class Sensor extends Element {
 }
 
 export class CircleSensor extends Sensor {
-  constructor(x, y, icon, opacityColor, color, radius = 10, area = 100) {
-    super(x, y, icon, opacityColor, color, radius);
+  constructor(x, y, icon, treeIcon, treeName, opacityColor, color, radius = 10, area = 100) {
+    super(x, y, icon, treeIcon, treeName, opacityColor, color, radius);
     this.area = area;
   }
 
@@ -51,8 +53,8 @@ export class CircleSensor extends Sensor {
 }
 
 export class LineSensor extends Sensor {
-  constructor(x, y, icon, opacityColor, color, radius, width) {
-    super(x, y, icon, opacityColor, color, radius);
+  constructor(x, y, icon, treeIcon, treeName, opacityColor, color, radius, width) {
+    super(x, y, icon, treeIcon, treeName, opacityColor, color, radius);
     this.width = width;
   }
 }

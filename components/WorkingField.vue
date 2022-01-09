@@ -50,6 +50,23 @@ export default {
       PiezoelectricSensorIcon: PiezoelectricSensorIcon,
     },
 
+    objectTitleList: {
+      FootSensorIcon: 'Охранный ножной',
+      ManualSensorIcon: 'Охранный ручной',
+      ActiveSingleBlockSensorIcon: 'Оптико электронный активный одноблочный',
+      ActiveTwoBlockSensorIcon: 'Оптико электронный активный двублочный',
+      InfraredLinearSensorBlock: 'Оптико электронный инфракрасный пассивный линейный',
+      InfraredSurfaceSensorIcon: 'Оптико электронный инфракрасный пассивный поверхностный',
+      InfraredVolumetricSensorIcon: 'Оптико электронный инфракрасный пассивный объёмный',
+      SingleBlockSensorIcon: 'Радиоволной одноблочный',
+      TwoBlockSensorIcon: 'Радиоволной двублочный',
+      AcousticSensorIcon: 'Акустический',
+      CombinedSensorIcon: 'Комбинированный',
+      ElectricalContactSensorIcon: 'Точечный электроконтактный',
+      ItinerarySensorIcon: 'Путевой конечный',
+      PiezoelectricSensorIcon: 'Пьезоэлектрический',
+    },
+
     mouseEvents: {
       down: false,
     },
@@ -66,6 +83,17 @@ export default {
       endY: null
     }
   }),
+
+  computed: {
+    buildingList() {
+      return this.$store.getters['object/objectList'].building;
+    },
+
+    sensorList() {
+      return this.$store.getters['object/objectList'].sensors;
+    }
+  },
+
   methods: {
     reset() {
       this.scope.project.activeLayer.removeChildren();
@@ -90,7 +118,7 @@ export default {
         if (height === 0) height = 10;
 
         this.$store.commit('object/addObject', [
-          'sensors',
+          'building',
           new Wall(x, y, width, height)
         ]);
         this.createWall.status = false;
@@ -101,31 +129,31 @@ export default {
       if (object.type === 'sensor') {
         this.$store.commit('object/addObject', [
           'sensors',
-          new CircleSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.opacityColor, object.color)
+          new CircleSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.icon, this.objectTitleList[object.icon], object.opacityColor, object.color)
         ]);
       } else if (object.icon === 'DoubleDoor') {
         this.$store.commit('object/addObject', [
-          'sensors',
+          'building',
           new DoubleDoor(event.offsetX, event.offsetY, 50, 100)
         ]);
       } else if (object.icon === 'Column') {
         this.$store.commit('object/addObject', [
-          'sensors',
+          'building',
           new Column(event.offsetX, event.offsetY, 50, 50)
         ]);
       } else if (object.icon === 'SingleDoor') {
         this.$store.commit('object/addObject', [
-          'sensors',
+          'building',
           new SingleDoor(event.offsetX, event.offsetY, 50, 50)
         ]);
       } else if (object.icon === 'SingleWindow') {
         this.$store.commit('object/addObject', [
-          'sensors',
+          'building',
           new SingleWindow(event.offsetX, event.offsetY, 10, 50)
         ]);
       } else if (object.icon === 'DoubleWindow') {
         this.$store.commit('object/addObject', [
-          'sensors',
+          'building',
           new DoubleWindow(event.offsetX, event.offsetY, 10, 100)
         ]);
       } else if (object.icon === 'Wall') {
@@ -146,13 +174,8 @@ export default {
 
       this.$store.commit('object/activateObject', {});
 
-      let objectList = this.$store.getters['object/objectList'];
-
-      objectList.sensors.forEach((object, index) => {
-        if (!object.isHover(event.offsetX, event.offsetY) && !this.keyboardEvent.Control) {
-          this.$store.commit('object/activateObjectOnList', [index, false]);
-        }
-      })
+      this.removeActiveStatusOnList(this.sensorList, 'sensors', event);
+      this.removeActiveStatusOnList(this.buildingList, 'building', event);
 
       this.rerender(event);
     },
@@ -164,13 +187,8 @@ export default {
         y: event.offsetY,
       };
 
-      let objectList = this.$store.getters['object/objectList'];
-
-      objectList.sensors.forEach((object, index) => {
-        if (object.isHover(event.offsetX, event.offsetY)) {
-          this.$store.commit('object/activateObjectOnList', [index, true]);
-        }
-      })
+      this.addActiveStatusOnList(this.sensorList, 'sensors', event);
+      this.addActiveStatusOnList(this.buildingList, 'building', event);
     },
 
     rerender(event) {
@@ -195,9 +213,12 @@ export default {
         path.strokeWidth = '10';
       }
 
-      let objectList = this.$store.getters['object/objectList'];
+      this.drawObjectList(this.sensorList, 'sensors', event);
+      this.drawObjectList(this.buildingList, 'building', event);
+    },
 
-      objectList.sensors.forEach((object, index) => {
+    drawObjectList(objectList, type, event = {}) {
+      objectList.forEach((object, index) => {
         if (!this.createWall.status) {
           if (object.isHover(event.offsetX, event.offsetY)) {
             object.hoverEffect(event.offsetX, event.offsetY);
@@ -206,7 +227,7 @@ export default {
           if (this.mouseEvents.down.status && object.active) {
             this.$store.commit(
               'object/changePosition',
-              [index, event.offsetX, event.offsetY, this.mouseEvents.down.x, this.mouseEvents.down.y]
+              [index, type, event.offsetX, event.offsetY, this.mouseEvents.down.x, this.mouseEvents.down.y]
             );
 
             this.mouseEvents.down.x = event.offsetX;
@@ -220,8 +241,25 @@ export default {
 
         object.drawObject();
       })
-    }
+    },
+
+    removeActiveStatusOnList(objectList, type, event) {
+      objectList.forEach((object, index) => {
+        if (!object.isHover(event.offsetX, event.offsetY) && !this.keyboardEvent.Control) {
+          this.$store.commit('object/activateObjectOnList', [index, type, false]);
+        }
+      })
+    },
+
+    addActiveStatusOnList(objectList, type, event) {
+      objectList.forEach((object, index) => {
+        if (object.isHover(event.offsetX, event.offsetY)) {
+          this.$store.commit('object/activateObjectOnList', [index, type, true]);
+        }
+      })
+    },
   },
+
   mounted() {
     this.scope = new paper.PaperScope();
     this.scope.setup(document.querySelector('canvas'));

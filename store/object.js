@@ -15,17 +15,21 @@ export const mutations = {
     state.objectList[type].push(object);
   },
 
-  activateObjectOnList(state, [index, status]) {
-    state.objectList.sensors[index].active = status;
+  activateObjectOnList(state, [index, type, status]) {
+    state.objectList[type][index].active = status;
   },
 
-  changePosition(state, [index, currentX, currentY, prevX, prevY]) {
-    state.objectList.sensors[index].moveEffect(currentX, currentY, prevX, prevY);
+  changePosition(state, [index, type, currentX, currentY, prevX, prevY]) {
+    state.objectList[type][index].moveEffect(currentX, currentY, prevX, prevY);
 
-    let tmp = state.objectList.sensors[index];
-    state.objectList.sensors[index] = state.objectList.sensors[state.objectList.sensors.length-1];
-    state.objectList.sensors[state.objectList.sensors.length-1] = tmp;
+    let tmp = state.objectList[type][index];
+    state.objectList[type][index] = state.objectList[type][state.objectList[type].length-1];
+    state.objectList[type][state.objectList[type].length-1] = tmp;
   },
+
+  changeName(state, [index, type, treeName]) {
+    state.objectList[type][index].treeName = treeName;
+  }
 };
 
 export const actions = {};
