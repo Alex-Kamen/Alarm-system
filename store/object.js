@@ -29,6 +29,12 @@ export const mutations = {
 
   changeName(state, [index, type, treeName]) {
     state.objectList[type][index].treeName = treeName;
+  },
+
+  changeSettings(state, [object, settings]) {
+    for (const setting of object.settings) {
+      object[setting.header] = settings[setting.header];
+    }
   }
 };
 
@@ -37,4 +43,12 @@ export const actions = {};
 export const getters = {
   activeObject: (state) => state.activeObject,
   objectList: (state) => state.objectList,
+  objectSettings: (state) => {
+    let activeObjectList = [
+      ...state.objectList.sensors.filter((object) => object.active),
+      ...state.objectList.building.filter((object) => object.active)
+    ];
+
+    if (activeObjectList.length === 1) return activeObjectList[0];
+  }
 };

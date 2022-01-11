@@ -2,7 +2,7 @@
   <div class="workingArea">
     <working-tree @rerender="rerender()"/>
     <working-field :canvas-id="'canvas-one'" ref="canvas"/>
-    <object-settings/>
+    <object-settings @rerender="rerender()"/>
   </div>
 </template>
 

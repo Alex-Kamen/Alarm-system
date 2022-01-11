@@ -1,4 +1,5 @@
 import {Element} from "./Object";
+import {SettingInput} from "./SettingInput";
 const paper = require('paper');
 
 export class Sensor extends Element {
@@ -17,6 +18,12 @@ export class CircleSensor extends Sensor {
   constructor(x, y, icon, treeIcon, treeName, opacityColor, color, radius = 10, area = 100) {
     super(x, y, icon, treeIcon, treeName, opacityColor, color, radius);
     this.area = area;
+    this.settings = [
+      new SettingInput('x', 'x', 'number'),
+      new SettingInput('y', 'y', 'number'),
+      new SettingInput('Наименование', 'treeName', 'text'),
+      new SettingInput('Охват', 'area', 'number')
+    ];
   }
 
   isHover(cursorX, cursorY) {

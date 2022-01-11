@@ -215,6 +215,11 @@ export default {
 
       this.drawObjectList(this.sensorList, 'sensors', event);
       this.drawObjectList(this.buildingList, 'building', event);
+
+      if (this.mouseEvents.down.status) {
+        this.mouseEvents.down.x = event.offsetX;
+        this.mouseEvents.down.y = event.offsetY;
+      }
     },
 
     drawObjectList(objectList, type, event = {}) {
@@ -224,14 +229,11 @@ export default {
             object.hoverEffect(event.offsetX, event.offsetY);
           }
 
-          if (this.mouseEvents.down.status && object.active) {
+          if (this.mouseEvents.down.status && object.active && event.offsetX && event.offsetY) {
             this.$store.commit(
               'object/changePosition',
               [index, type, event.offsetX, event.offsetY, this.mouseEvents.down.x, this.mouseEvents.down.y]
             );
-
-            this.mouseEvents.down.x = event.offsetX;
-            this.mouseEvents.down.y = event.offsetY;
           }
 
           if (object.active) {

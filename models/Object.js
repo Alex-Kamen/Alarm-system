@@ -4,8 +4,24 @@ export class Element {
   active = false;
 
   constructor(x, y) {
-    this.x = x;
-    this.y = y;
+    this._x = x;
+    this._y = y;
+  }
+
+  get x() {
+    return this._x;
+  }
+
+  set x(newVal) {
+    this._x = +newVal;
+  }
+
+  get y() {
+    return this._y;
+  }
+
+  set y(newVal) {
+    this._y = +newVal;
   }
 
   isHover() {}
