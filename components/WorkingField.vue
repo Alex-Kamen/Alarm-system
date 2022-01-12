@@ -23,8 +23,9 @@ import CombinedSensorIcon from '@/static/icons/sensor/9.png';
 import ElectricalContactSensorIcon from '@/static/icons/sensor/14.png';
 import ItinerarySensorIcon from '@/static/icons/sensor/1.png';
 import PiezoelectricSensorIcon from '@/static/icons/sensor/2.png';
-import {CircleSensor} from "../models/Sensor";
+import {CircleSensor, LineSensor, Sensor, UPKSensor} from "../models/Sensor";
 import {Column, DoubleDoor, SingleDoor, SingleWindow, DoubleWindow, Wall} from "../models/Building";
+import UPK from "@/static/icons/sensor/15.png";
 
 const paper = require('paper');
 
@@ -48,6 +49,7 @@ export default {
       ElectricalContactSensorIcon: ElectricalContactSensorIcon,
       ItinerarySensorIcon: ItinerarySensorIcon,
       PiezoelectricSensorIcon: PiezoelectricSensorIcon,
+      UPK: UPK,
     },
 
     objectTitleList: {
@@ -65,6 +67,7 @@ export default {
       ElectricalContactSensorIcon: 'Точечный электроконтактный',
       ItinerarySensorIcon: 'Путевой конечный',
       PiezoelectricSensorIcon: 'Пьезоэлектрический',
+      UPK: 'УПК',
     },
 
     mouseEvents: {
@@ -108,6 +111,8 @@ export default {
     },
 
     mouseUp(event) {
+      if (event.which !== 1) return;
+
       if (this.createWall.status) {
         let x = Math.min(this.createWall.startX, this.createWall.endX);
         let y = Math.min(this.createWall.startY, this.createWall.endY);
@@ -129,7 +134,17 @@ export default {
       if (object.type === 'sensor') {
         this.$store.commit('object/addObject', [
           'sensors',
+          new UPKSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.icon, this.objectTitleList[object.icon], object.opacityColor, object.color)
+        ]);
+      } else if (object.type === 'circle' && this.$store.getters['object/projectCapacity'] > this.$store.getters['object/sensorsCount']) {
+        this.$store.commit('object/addObject', [
+          'sensors',
           new CircleSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.icon, this.objectTitleList[object.icon], object.opacityColor, object.color)
+        ]);
+      } else if (object.type === 'linear' && this.$store.getters['object/projectCapacity'] > this.$store.getters['object/sensorsCount']) {
+        this.$store.commit('object/addObject', [
+          'sensors',
+          new LineSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.icon, this.objectTitleList[object.icon], object.opacityColor, object.color)
         ]);
       } else if (object.icon === 'DoubleDoor') {
         this.$store.commit('object/addObject', [
@@ -181,6 +196,8 @@ export default {
     },
 
     mouseDown(event) {
+      if (event.which !== 1) return;
+
       this.mouseEvents.down = {
         status: true,
         x: event.offsetX,
@@ -248,7 +265,7 @@ export default {
     removeActiveStatusOnList(objectList, type, event) {
       objectList.forEach((object, index) => {
         if (!object.isHover(event.offsetX, event.offsetY) && !this.keyboardEvent.Control) {
-          this.$store.commit('object/activateObjectOnList', [index, type, false]);
+          this.$store.commit('object/activateObjectOnList', [object, false]);
         }
       })
     },
@@ -256,7 +273,7 @@ export default {
     addActiveStatusOnList(objectList, type, event) {
       objectList.forEach((object, index) => {
         if (object.isHover(event.offsetX, event.offsetY)) {
-          this.$store.commit('object/activateObjectOnList', [index, type, true]);
+          this.$store.commit('object/activateObjectOnList', [object, true]);
         }
       })
     },

@@ -1,3 +1,5 @@
+import {BuildingGroup, SensorGroup} from "../models/Group";
+
 export const state = () => ({
   activeObject: {},
   objectList: {
@@ -15,8 +17,8 @@ export const mutations = {
     state.objectList[type].push(object);
   },
 
-  activateObjectOnList(state, [index, type, status]) {
-    state.objectList[type][index].active = status;
+  activateObjectOnList(state, [object, status]) {
+    object.active = status;
   },
 
   changePosition(state, [index, type, currentX, currentY, prevX, prevY]) {
@@ -27,14 +29,59 @@ export const mutations = {
     state.objectList[type][state.objectList[type].length-1] = tmp;
   },
 
-  changeName(state, [index, type, treeName]) {
-    state.objectList[type][index].treeName = treeName;
+  changeName(state, [object, treeName]) {
+    object.treeName = treeName;
   },
 
   changeSettings(state, [object, settings]) {
     for (const setting of object.settings) {
       object[setting.header] = settings[setting.header];
     }
+  },
+
+  deleteObjects(state) {
+    state.objectList.sensors = state.objectList.sensors.filter((sensor) => !sensor.active);
+    state.objectList.building = state.objectList.building.filter((sensor) => !sensor.active);
+  },
+
+  groupObject(state) {
+    let group = state.objectList.building.filter((building) => building.active);
+    if (group.length) this.commit('object/addObject', ['building', new BuildingGroup('group', group)])
+
+    group = state.objectList.sensors.filter((sensor) => sensor.active);
+    group.forEach((sensor, index) => {
+      sensor.x = group[0].x + 50 * index;
+      sensor.y = group[0].y;
+    })
+    if (group.length) this.commit('object/addObject', ['sensors', new SensorGroup('group', group)])
+  },
+
+  deleteGroupObject(state) {
+    let groupList = state.objectList.building.filter((building) => building.active && building.list);
+    state.objectList.building = state.objectList.building.filter((building) => !building.active);
+    groupList.map((group) => {
+      group.list.forEach((object) => {
+        this.commit('object/addObject', ['building', object])
+      })
+    });
+
+    groupList = state.objectList.sensors.filter((sensor) => sensor.active && sensor.list);
+    state.objectList.sensors = state.objectList.sensors.filter((sensor) => !sensor.active);
+    groupList.map((group) => {
+      group.list.forEach((object) => {
+        this.commit('object/addObject', ['sensors', object])
+      })
+    });
+  },
+
+  rotateObject(state) {
+    state.objectList.sensors.forEach((sensor) => {
+      if (sensor.active) sensor.rotate();
+    })
+
+    state.objectList.building.forEach((building) => {
+      if (building.active) building.rotate();
+    })
   }
 };
 
@@ -50,5 +97,11 @@ export const getters = {
     ];
 
     if (activeObjectList.length === 1) return activeObjectList[0];
+  },
+  projectCapacity: (state) => {
+    return state.objectList.sensors.reduce((accumulate, currency) => (accumulate || 0) + (currency.capacity || 0), 0);
+  },
+  sensorsCount: (state) => {
+    return state.objectList.sensors.filter((sensor) => !sensor.capacity).length;
   }
 };

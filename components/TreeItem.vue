@@ -24,7 +24,8 @@ export default {
   props: {
     object: Object,
     index: Number,
-    type: String
+    type: String,
+    groupObjectIndex: Number
   },
 
   data() {
@@ -36,12 +37,12 @@ export default {
 
   methods: {
     activateObject() {
-      this.$store.commit('object/activateObjectOnList', [this.index, this.type, !this.object.active]);
+      this.$store.commit('object/activateObjectOnList', [this.object, !this.object.active]);
       this.$emit('rerender')
     },
 
     changeName() {
-      this.$store.commit('object/changeName', [this.index, this.type, this.treeName]);
+      this.$store.commit('object/changeName', [this.object, this.treeName]);
       this.isChangeName = false;
     }
   }

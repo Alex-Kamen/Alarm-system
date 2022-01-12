@@ -24,6 +24,7 @@ import DoubleWindow from "../components/icons/buildings/DoubleWindow";
 import SingleDoor from "../components/icons/buildings/SingleDoor";
 import SingleWindow from "../components/icons/buildings/SingleWindow";
 import Wall from "../components/icons/buildings/Wall";
+import UPK from "../components/icons/sensors/UPK";
 
 Vue.use(Vuetify);
 
@@ -96,6 +97,9 @@ export default (ctx) => {
         },
         Wall: {
           component: Wall
+        },
+        UPK: {
+          component: UPK
         }
       },
     },

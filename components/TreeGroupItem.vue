@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="treeItem"  @dblclick="isChangeName = true" @click="isOpened = !isOpened">
+    <div class="treeItem"  @dblclick="isChangeName = true" @click="activateObject" :class="{active: objectList.active}">
       <div class="listIcon" :class="{opened: isOpened}"></div>
       <v-icon :size="25" class="treeItem__icon">
-        $vuetify.icons.values.{{objectList.groupIcon}}
+        $vuetify.icons.values.{{objectList.treeIcon}}
       </v-icon>
       <p class="treeItem__text" v-if="!isChangeName">
         {{objectList.treeName}}
@@ -14,10 +14,11 @@
     <div v-if="isOpened">
       <TreeItem
         style="padding-left: 35px"
-        v-for="(object, index) in objectList.objectList"
+        v-for="(object, index) in objectList.list"
         :object="object"
+        :groupObjectIndex="objectIndex"
         :index="index"
-        :type="objectList.type"
+        :type="type"
         :key="index"
         @rerender="rerender()"
       />
@@ -33,6 +34,8 @@ export default {
   components: {TreeItem},
   props: {
     objectList: Object,
+    type: String,
+    objectIndex: Number
   },
 
   data() {
@@ -45,11 +48,13 @@ export default {
 
   methods: {
     changeName() {
+      this.$store.commit('object/changeName', [this.objectList, this.treeGroupName]);
       this.isChangeName = false;
     },
 
     activateObject() {
-      this.$store.commit('object/activateObjectOnList', [this.index, this.objectList.type, !this.object.active]);
+      this.$store.commit('object/activateObjectOnList', [this.objectList, !this.objectList.active]);
+      this.isOpened = !this.isOpened;
       this.$emit('rerender');
     },
 
@@ -73,5 +78,9 @@ export default {
 
 .opened {
   transform: rotate(90deg);
+}
+
+.active {
+
 }
 </style>

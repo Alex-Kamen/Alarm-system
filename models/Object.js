@@ -30,6 +30,7 @@ export class Element {
   hoverEffect() {}
   activeEffect() {}
   moveEffect() {}
+  rotate() {}
 }
 
 export default {
@@ -47,26 +48,33 @@ export default {
   },
 
   sensorsList: {
+    UPK: {
+      title: 'УПК',
+      color: "#ff6b00",
+      opacityColor: "rgba(255,107,0,0.5)",
+      icon: "UPK",
+      type: 'sensor'
+    },
     ItinerarySensor: {
       title: 'Путевой конечный',
       color: "#E53434",
       opacityColor: "rgba(229,52,52,0.5)",
       icon: "ItinerarySensorIcon",
-      type: 'sensor'
+      type: 'circle'
     },
     PiezoelectricSensor: {
       title: 'Пьезоэлектрический',
       color: "#349BE5",
       opacityColor: "rgba(52,155,229,0.5)",
       icon: 'PiezoelectricSensorIcon',
-      type: 'sensor'
+      type: 'circle'
     },
     AcousticSensor: {
       title: "акустический",
       color: "#37E534",
       opacityColor: "rgba(55,229,52,0.5)",
       icon: 'AcousticSensorIcon',
-      type: 'sensor'
+      type: 'circle'
     },
     opticalElectronic: {
       title: 'Оптико электронные',
@@ -77,35 +85,35 @@ export default {
           color: '#AD34E5',
           opacityColor: 'rgba(173,52,229,0.5)',
           icon: 'ActiveSingleBlockSensorIcon',
-          type: 'sensor'
+          type: 'circle'
         },
         {
           title: 'Активный двублочный',
           color: '#AD34E5',
           opacityColor: 'rgba(173,52,229,0.5)',
           icon: 'ActiveTwoBlockSensorIcon',
-          type: 'sensor'
+          type: 'circle'
         },
         {
           title: 'Инфракрасный пассивный объёмный',
           color: '#AD34E5',
           opacityColor: 'rgba(173,52,229,0.5)',
           icon: 'InfraredVolumetricSensorIcon',
-          type: 'sensor'
+          type: 'circle'
         },
         {
           title: 'инфракрасный пассивный поверхностный',
           color: '#AD34E5',
           opacityColor: 'rgba(173,52,229,0.5)',
           icon: 'InfraredSurfaceSensorIcon',
-          type: 'sensor'
+          type: 'circle'
         },
         {
           title: 'инфракрасный пассивный линейный',
           color: '#AD34E5',
           opacityColor: 'rgba(173,52,229,0.5)',
           icon: 'InfraredLinearSensorBlock',
-          type: 'sensor'
+          type: 'circle'
         },
       ]
     },
@@ -114,7 +122,7 @@ export default {
       color: '#E58934',
       opacityColor: "rgba(229,137,52,0.5)",
       icon: 'CombinedSensorIcon',
-      type: 'sensor'
+      type: 'circle'
     },
     RadioWave: {
       title: 'Радиоволновые',
@@ -125,14 +133,14 @@ export default {
           color: '#34E59B',
           opacityColor: "rgba(52,229,155,0.5)",
           icon: 'SingleBlockSensorIcon',
-          type: 'sensor'
+          type: 'circle'
         },
         {
           title: 'Двублочный',
           color: '#34E59B',
           opacityColor: "rgba(52,229,155,0.5)",
           icon: 'TwoBlockSensorIcon',
-          type: 'sensor'
+          type: 'circle'
         }
       ]
     },
@@ -145,14 +153,14 @@ export default {
           color: '#6234E5',
           opacityColor: "rgba(98,52,229,0.5)",
           icon: 'ManualSensorIcon',
-          type: 'sensor'
+          type: 'circle'
         },
         {
           title: 'Ножной',
           color: '#6234E5',
           opacityColor: "rgba(98,52,229,0.5)",
           icon: 'FootSensorIcon',
-          type: 'sensor'
+          type: 'circle'
         },
       ]
     },
@@ -161,7 +169,7 @@ export default {
       color: "#E5349E",
       opacityColor: "rgba(229,52,158,0.5)",
       icon: 'ElectricalContactSensorIcon',
-      type: 'sensor'
+      type: 'linear'
     }
   },
 

@@ -2,27 +2,42 @@
   <div class="workingTree">
     <h1 class="workingTree__title">Дерево объектов</h1>
     <p class="workingTree__header">Объекты здания</p>
-    <TreeGroupItem :objectList="group" v-if="group"/>
     <div>
-      <TreeItem
-        v-for="(object, index) in buildingList"
-        :object="object"
-        :index="index"
-        :type="'building'"
-        :key="index"
-        @rerender="rerender()"
-      />
+      <div v-for="(object, index) in buildingList" :key="index">
+        <TreeGroupItem
+          v-if="object.list"
+          :objectList="object"
+          :objectIndex="index"
+          :type="'building'"
+          @rerender="rerender()"
+        />
+        <TreeItem
+          v-else
+          :object="object"
+          :index="index"
+          :type="'building'"
+          @rerender="rerender()"
+        />
+      </div>
     </div>
     <p class="workingTree__header">Датчики</p>
     <div>
-      <TreeItem
-        v-for="(object, index) in sensorList"
-        :object="object"
-        :index="index"
-        :type="'sensors'"
-        :key="index"
-        @rerender="rerender()"
-      />
+      <div v-for="(object, index) in sensorList" :key="index">
+        <TreeGroupItem
+          v-if="object.list"
+          :objectList="object"
+          :objectIndex="index"
+          :type="'sensors'"
+          @rerender="rerender()"
+        />
+        <TreeItem
+          v-else
+          :object="object"
+          :index="index"
+          :type="'sensors'"
+          @rerender="rerender()"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -48,10 +63,6 @@ export default {
     sensorList() {
       return this.$store.getters['object/objectList'].sensors;
     },
-
-    group() {
-      return new Group('Group', 'SingleBlockSensorIcon', this.sensorList, 'sensors')
-    }
   },
 
   methods: {

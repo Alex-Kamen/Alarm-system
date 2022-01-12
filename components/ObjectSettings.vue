@@ -29,7 +29,9 @@ export default {
         treeName: this.getSetting('treeName'),
         height: this.getSetting('height'),
         width: this.getSetting('width'),
-        area: this.getSetting('area')
+        area: this.getSetting('area'),
+        capacity: this.getSetting('capacity'),
+        angle: this.getSetting('angle')
       };
     }
   },

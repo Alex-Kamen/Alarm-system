@@ -1,5 +1,6 @@
 <template>
   <div class="instumentPanel" data-app>
+    <object-item :settings="sensorsList.UPK"></object-item>
     <object-item :settings="sensorsList.ItinerarySensor"></object-item>
     <object-item :settings="sensorsList.PiezoelectricSensor"></object-item>
     <object-item :settings="sensorsList.AcousticSensor"></object-item>

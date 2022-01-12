@@ -12,6 +12,7 @@
     "core-js": "^3.15.1",
     "nuxt": "^2.15.7",
     "paper": "^0.12.15",
+    "vue-contextmenu": "^1.5.11",
     "vuetify": "^2.5.12"
   },
   "devDependencies": {
