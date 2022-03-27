@@ -1,4 +1,6 @@
 import {BuildingGroup, SensorGroup} from "../models/Group";
+import {SensorMapper} from "../mapper/SensorMapper";
+import {BuildingMapper} from '../mapper/BuildingMapper';
 
 export const state = () => ({
   activeObject: {},
@@ -6,15 +8,32 @@ export const state = () => ({
     sensors: [],
     building: []
   },
+  clipboard: {
+    sensors: [],
+    building: []
+  },
 });
 
 export const mutations = {
+  setObjectList(state, objectList) {
+    state.objectList.sensors = objectList.sensors.map((sensor) => new SensorMapper().toObject(sensor));
+    state.objectList.building = objectList.building.map((building) => new BuildingMapper().toObject(building));
+  },
+
+  saveObjectList(state) {
+    this.dispatch('tab/save', {objectList: state.objectList})
+  },
+
   activateObject(state, object) {
     state.activeObject = object;
   },
 
   addObject(state, [type, object]) {
-    state.objectList[type].push(object);
+    if (object.path && type === 'sensors') {
+      state.objectList[type].unshift(object);
+    } else {
+      state.objectList[type].push(object);
+    }
   },
 
   activateObjectOnList(state, [object, status]) {
@@ -82,7 +101,30 @@ export const mutations = {
     state.objectList.building.forEach((building) => {
       if (building.active) building.rotate();
     })
-  }
+  },
+
+  /*copy(state) {
+    state.clipboard.sensors = state.objectList.sensors
+      .filter((sensor) => sensor.active)
+      .map((sensor) => {
+        const obj = Object.assign({}, sensor);
+        sensor.active = false;
+        return obj;
+      });
+    state.clipboard.building = state.objectList.building
+      .filter((building) => building.active)
+      .map((building) => {
+        const obj = Object.assign({}, building);
+        building.active = false;
+        return obj;
+      });
+  },
+
+  paste(state) {
+    state.clipboard.sensors.forEach((sensor) => this.commit('object/addObject', ['sensors', Object.assign({}, sensor)]));
+    state.clipboard.building.forEach((building) => this.commit('object/addObject', ['building', Object.assign({}, building)]));
+    console.log(state.objectList)
+  }*/
 };
 
 export const actions = {};

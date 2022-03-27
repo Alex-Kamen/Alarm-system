@@ -23,14 +23,16 @@ import CombinedSensorIcon from '@/static/icons/sensor/9.png';
 import ElectricalContactSensorIcon from '@/static/icons/sensor/14.png';
 import ItinerarySensorIcon from '@/static/icons/sensor/1.png';
 import PiezoelectricSensorIcon from '@/static/icons/sensor/2.png';
-import {CircleSensor, LineSensor, Sensor, UPKSensor} from "../models/Sensor";
+import {CircleSensor, LineSensor, Sensor, UPKSensor, Wire} from "../models/Sensor";
 import {Column, DoubleDoor, SingleDoor, SingleWindow, DoubleWindow, Wall} from "../models/Building";
 import UPK from "@/static/icons/sensor/15.png";
+import Info from "../models/Info";
 
 const paper = require('paper');
 
 export default {
   name: "WorkingField",
+
   data: () => ({
     path: null,
     scope: null,
@@ -67,7 +69,7 @@ export default {
       ElectricalContactSensorIcon: 'Точечный электроконтактный',
       ItinerarySensorIcon: 'Путевой конечный',
       PiezoelectricSensorIcon: 'Пьезоэлектрический',
-      UPK: 'УПК',
+      UPK: 'ПКП',
     },
 
     mouseEvents: {
@@ -80,10 +82,16 @@ export default {
 
     createWall: {
       status: false,
-      startX: null,
-      startY: null,
-      endX: null,
-      endY: null
+      path: [],
+      length: 0,
+      lastPoint: {}
+    },
+
+    createWire: {
+      status: false,
+      path: [],
+      length: 0,
+      lastPoint: {}
     }
   }),
 
@@ -94,7 +102,24 @@ export default {
 
     sensorList() {
       return this.$store.getters['object/objectList'].sensors;
-    }
+    },
+
+    pkp() {
+      return this.$store.getters['object/objectList'].sensors.find((sensor) => sensor.type === 'pkp');
+    },
+
+    amperagePKP() {
+      return this.pkp ?  this.pkp.voltage / this.pkp.resistance : '-';
+    },
+
+    amperageSensor() {
+      return this.sensorList
+        .reduce((prevValue, currentValue) => currentValue.amperage ? prevValue + currentValue.amperage : 0, 0);
+    },
+
+    wireSection() {
+      return Info.sectionByAmperage(this.amperagePKP ? this.amperagePKP + this.amperageSensor : this.amperageSensor);
+    },
   },
 
   methods: {
@@ -104,6 +129,14 @@ export default {
 
     keyDown(event) {
       this.keyboardEvent[event.key] = true;
+/*
+      if (this.keyboardEvent.Control && this.keyboardEvent.c) {
+        this.$store.commit('object/copy')
+      }
+
+      if (this.keyboardEvent.Control && this.keyboardEvent.v) {
+        this.$store.commit('object/paste')
+      }*/
     },
 
     keyUp(event) {
@@ -113,23 +146,73 @@ export default {
     mouseUp(event) {
       if (event.which !== 1) return;
 
-      if (this.createWall.status) {
-        let x = Math.min(this.createWall.startX, this.createWall.endX);
-        let y = Math.min(this.createWall.startY, this.createWall.endY);
-        let width = Math.abs(this.createWall.startY - this.createWall.endY);
-        let height = Math.abs(this.createWall.startX - this.createWall.endX);
+      this.mouseEvents.down = {};
 
-        if (width === 0) width = 10;
-        if (height === 0) height = 10;
+      if (this.keyboardEvent.Control && this.sensorList.some((sensor) => sensor.isHover(event.offsetX, event.offsetY)) && !this.createWall.status && !this.createWire.status) {
+        this.createWire = {
+          status: true,
+          path: [this.sensorList.filter((sensor) => sensor.isHover(event.offsetX, event.offsetY))[0]],
+          length: 1
+        }
 
-        this.$store.commit('object/addObject', [
-          'building',
-          new Wall(x, y, width, height)
-        ]);
-        this.createWall.status = false;
+        this.mouseEvents.down = {
+          status: true,
+          x: event.offsetX,
+          y: event.offsetY,
+        }
+
+        return;
       }
 
-      this.mouseEvents.down = {};
+      if (this.createWall.status) {
+        let buildingCoords = this.buildingList.filter((building) => building.linkHoverEffect(event.offsetX, event.offsetY))[0]
+
+        if (buildingCoords) {
+          buildingCoords = buildingCoords.linkHoverEffect(event.offsetX, event.offsetY);
+          this.createWall.path.push(buildingCoords)
+          this.$store.commit('object/addObject', [
+            'building',
+            new Wall(this.createWall.path, 10)
+          ]);
+
+          this.createWall.status = false;
+          return;
+        } else {
+          this.mouseEvents.down = {
+            status: true,
+            x: event.offsetX,
+            y: event.offsetY,
+          };
+
+          this.createWall.path.push(this.createWall.lastPoint);
+          this.createWall.length++;
+        }
+      }
+
+      if (this.createWire.status) {
+        let sensorCoords = this.sensorList.filter((sensor) => sensor.isHover(event.offsetX, event.offsetY))[0]
+
+        if (sensorCoords) {
+          this.createWire.path.push(sensorCoords)
+          this.$store.commit('object/addObject', [
+            'sensors',
+            new Wire(this.createWire.path, 'black')
+          ]);
+
+          this.createWire.status = false;
+          return;
+        } else {
+          this.mouseEvents.down = {
+            status: true,
+            x: event.offsetX,
+            y: event.offsetY,
+          };
+
+          this.createWire.path.push(this.createWire.lastPoint);
+          this.createWire.length++;
+        }
+      }
+
       let object = this.$store.getters['object/activeObject'];
       if (object.type === 'sensor') {
         this.$store.commit('object/addObject', [
@@ -171,13 +254,11 @@ export default {
           'building',
           new DoubleWindow(event.offsetX, event.offsetY, 10, 100)
         ]);
-      } else if (object.icon === 'Wall') {
+      } else if (this.buildingList.filter((building) => building.linkHoverEffect(event.offsetX, event.offsetY))[0] && !this.createWall.status && !this.createWire.status) {
         this.createWall = {
           status: true,
-          startX: event.offsetX,
-          startY: event.offsetY,
-          endX: null,
-          endY: null
+          path: [this.buildingList.filter((building) => building.linkHoverEffect(event.offsetX, event.offsetY))[0].linkHoverEffect(event.offsetX, event.offsetY)],
+          length: 1
         };
 
         this.mouseEvents.down = {
@@ -210,24 +291,43 @@ export default {
 
     rerender(event) {
       this.reset();
+      this.$store.commit('object/saveObjectList');
 
       if (this.createWall.status) {
         let path = new paper.Path();
+        this.createWall.path.forEach((point) => path.add(new paper.Point(point.x, point.y)));
+        const lastPoint = this.createWall.path[this.createWall.path.length - 1];
 
         if (Math.abs(this.mouseEvents.down.x - event.offsetX) >= Math.abs(this.mouseEvents.down.y - event.offsetY)) {
-          path.add(new paper.Point(this.createWall.startX, this.createWall.startY));
-          path.add(new paper.Point(event.offsetX, this.createWall.startY));
-          this.createWall.endX = event.offsetX;
-          this.createWall.endY = this.createWall.startY;
+          path.add(new paper.Point(event.offsetX, lastPoint.y));
+          this.createWall.lastPoint = {x: event.offsetX, y: lastPoint.y};
         } else {
-          path.add(new paper.Point(this.createWall.startX, this.createWall.startY));
-          path.add(new paper.Point(this.createWall.startX, event.offsetY));
-          this.createWall.endX = this.createWall.startX;
-          this.createWall.endY = event.offsetY;
+          path.add(new paper.Point(lastPoint.x, event.offsetY));
+          this.createWall.lastPoint = {x: lastPoint.x, y: event.offsetY};
         }
 
         path.strokeColor = 'black';
         path.strokeWidth = '10';
+      }
+
+      if (this.createWire.status) {
+        let path = new paper.Path();
+        this.createWire.path.forEach((point) => path.add(new paper.Point(point.x, point.y)));
+        const lastPoint = {
+          x: this.createWire.path[this.createWire.path.length - 1].x,
+          y: this.createWire.path[this.createWire.path.length - 1].y
+        };
+
+        if (Math.abs(this.mouseEvents.down.x - event.offsetX) >= Math.abs(this.mouseEvents.down.y - event.offsetY)) {
+          path.add(new paper.Point(event.offsetX, lastPoint.y));
+          this.createWire.lastPoint = {x: event.offsetX, y: lastPoint.y};
+        } else {
+          path.add(new paper.Point(lastPoint.x, event.offsetY));
+          this.createWire.lastPoint = {x: lastPoint.x, y: event.offsetY};
+        }
+
+        path.strokeColor = 'black';
+        path.strokeWidth = '5';
       }
 
       this.drawObjectList(this.sensorList, 'sensors', event);
@@ -241,11 +341,13 @@ export default {
 
     drawObjectList(objectList, type, event = {}) {
       objectList.forEach((object, index) => {
-        if (!this.createWall.status) {
-          if (object.isHover(event.offsetX, event.offsetY)) {
-            object.hoverEffect(event.offsetX, event.offsetY);
-          }
+        if (object.linkHoverEffect) object.linkHoverEffect(event.offsetX, event.offsetY);
 
+        if (object.isHover(event.offsetX, event.offsetY)) {
+          object.hoverEffect(event.offsetX, event.offsetY);
+        }
+
+        if (!this.createWall.status && !this.createWire.status) {
           if (this.mouseEvents.down.status && object.active && event.offsetX && event.offsetY) {
             this.$store.commit(
               'object/changePosition',
@@ -258,7 +360,7 @@ export default {
           }
         }
 
-        object.drawObject();
+        object.drawObject(this.wireSection);
       })
     },
 
@@ -291,11 +393,16 @@ export default {
 <style scoped>
 .workingField {
   flex: 1;
+  position: relative;
+  overflow: auto;
 }
 
 canvas {
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10000px;
+  height: 10000px;
   background-color: #E5E5E5;
 }
 </style>

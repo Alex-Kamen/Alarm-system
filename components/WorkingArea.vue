@@ -14,6 +14,7 @@
       }"
       @rerender="rerender()"
     />
+    <schematic-info/>
   </div>
 </template>
 
@@ -22,6 +23,7 @@ import WorkingTree from "../components/WorkingTree";
 import ObjectSettings from "../components/ObjectSettings";
 import WorkingField from "../components/WorkingField";
 import ContextMenu from "./ContextMenu";
+import SchematicInfo from "./SchematicInfo";
 
 export default {
   name: "WorkingArea",
@@ -30,7 +32,8 @@ export default {
     ContextMenu,
     WorkingTree,
     ObjectSettings,
-    WorkingField
+    WorkingField,
+    SchematicInfo
   },
 
   data() {
@@ -63,6 +66,7 @@ export default {
 <style scoped>
 .workingArea {
   display: flex;
+  position: relative;
 }
 
 .visible {

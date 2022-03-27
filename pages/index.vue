@@ -1,8 +1,8 @@
 <template>
   <v-app data-app>
-    <tabs-panel/>
+    <tabs-panel @rerender="rerender()"/>
     <instrument-panel/>
-    <working-area/>
+    <working-area ref="canvas"/>
   </v-app>
 </template>
 
@@ -16,6 +16,33 @@ export default {
     TabsPanel,
     InstrumentPanel,
     WorkingArea
+  },
+
+  methods: {
+    rerender() {
+      this.$refs.canvas.rerender();
+    }
+  },
+
+  mounted() {
+    document.addEventListener('resize', () => {
+      console.log(1111)
+    })
+
+    if (localStorage.length > 0) {
+      for (let i = 0; i < localStorage.length; i++) {
+        const tabName = localStorage.key(i);
+        const objectList = JSON.parse(localStorage.getItem(tabName));
+        this.$store.commit('tab/newTab', [tabName, objectList]);
+      }
+
+      this.$store.commit('tab/active', localStorage.key(localStorage.length-1));
+      this.$refs.canvas.rerender();
+      this.$store.commit('tab/active', localStorage.key(localStorage.length-1));
+      this.$refs.canvas.rerender();
+    } else {
+      this.$store.commit('tab/newTab', []);
+    }
   }
 }
 </script>

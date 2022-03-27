@@ -31,6 +31,7 @@ export class Element {
   activeEffect() {}
   moveEffect() {}
   rotate() {}
+  linkHoverEffect() {}
 }
 
 export default {
@@ -49,7 +50,7 @@ export default {
 
   sensorsList: {
     UPK: {
-      title: 'УПК',
+      title: 'ПКП',
       color: "#ff6b00",
       opacityColor: "rgba(255,107,0,0.5)",
       icon: "UPK",
@@ -177,11 +178,6 @@ export default {
     title: 'Объекты здания',
     icon: 'DoubleDoor',
     list: [
-      {
-        title: 'Стена',
-        icon: 'Wall',
-        type: 'building'
-      },
       {
         title: 'Колонна',
         icon: 'Column',

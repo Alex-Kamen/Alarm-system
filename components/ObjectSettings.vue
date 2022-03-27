@@ -3,8 +3,17 @@
     <h1 class="objectSettings__title">Настройки</h1>
     <div v-if="objectSettings">
       <div v-for="(setting, key) in objectSettings.settings" :key="key">
-        <label :for="key" class="input__label">{{setting.name}}</label>
-        <input :id="key" :type="setting.type" v-model="object[setting.header]" :placeholder="setting.name" @change="rerender" class="settings__input"/>
+        <div v-if="setting.type === 'select'">
+          <label :for="key" class="input__label">{{setting.name}}</label>
+          <select v-model="object[setting.header]" @change="rerender" class="settings__input">
+            <option value="circle">Радиальный</option>
+            <option value="line">Линейный</option>
+          </select>
+        </div>
+        <div v-else>
+          <label :for="key" class="input__label">{{setting.name}}</label>
+          <input :id="key" :type="setting.type" v-model="object[setting.header]" :placeholder="setting.name" @change="rerender" class="settings__input"/>
+        </div>
       </div>
     </div>
     <div v-else class="setting__text">
@@ -29,9 +38,14 @@ export default {
         treeName: this.getSetting('treeName'),
         height: this.getSetting('height'),
         width: this.getSetting('width'),
+        color: this.getSetting('color'),
         area: this.getSetting('area'),
         capacity: this.getSetting('capacity'),
-        angle: this.getSetting('angle')
+        angle: this.getSetting('angle'),
+        type: this.getSetting('type'),
+        amperage: this.getSetting('amperage'),
+        resistance: this.getSetting('resistance'),
+        voltage: this.getSetting('voltage')
       };
     }
   },
@@ -54,6 +68,7 @@ export default {
   background-color: white;
   width: 250px;
   height: calc(100vh - 90px);
+  z-index: 1000;
 }
 
 .objectSettings__title {

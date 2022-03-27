@@ -25,6 +25,8 @@ import SingleDoor from "../components/icons/buildings/SingleDoor";
 import SingleWindow from "../components/icons/buildings/SingleWindow";
 import Wall from "../components/icons/buildings/Wall";
 import UPK from "../components/icons/sensors/UPK";
+import BurgerMenuIcon from "../components/icons/BurgerMenuIcon";
+import InfoIcon from "../components/icons/InfoIcon";
 
 Vue.use(Vuetify);
 
@@ -100,6 +102,12 @@ export default (ctx) => {
         },
         UPK: {
           component: UPK
+        },
+        BurgerMenu: {
+          component: BurgerMenuIcon
+        },
+        InfoIcon: {
+          component: InfoIcon
         }
       },
     },
