@@ -5,14 +5,14 @@
       <div v-for="(setting, key) in objectSettings.settings" :key="key">
         <div v-if="setting.type === 'select'">
           <label :for="key" class="input__label">{{setting.name}}</label>
-          <select v-model="object[setting.header]" @change="rerender" class="settings__input">
+          <select v-model="object[setting.header]" @input="rerender" class="settings__input">
             <option value="circle">Радиальный</option>
             <option value="line">Линейный</option>
           </select>
         </div>
         <div v-else>
           <label :for="key" class="input__label">{{setting.name}}</label>
-          <input :id="key" :type="setting.type" v-model="object[setting.header]" :placeholder="setting.name" @change="rerender" class="settings__input"/>
+          <input :id="key" :type="setting.type" v-model="object[setting.header]" :placeholder="setting.name" @input="rerender" class="settings__input"/>
         </div>
       </div>
     </div>

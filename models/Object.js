@@ -171,39 +171,42 @@ export default {
       opacityColor: "rgba(229,52,158,0.5)",
       icon: 'ElectricalContactSensorIcon',
       type: 'linear'
+    },
+    MagneticContactSensor: {
+      title: 'Магнитоконтактный',
+      color: "#00b2ff",
+      opacityColor: "rgba(0,178,255,0.5)",
+      icon: 'MagneticContactSensorIcon',
+      type: 'linear'
     }
   },
 
   buildingsList: {
-    title: 'Объекты здания',
-    icon: 'DoubleDoor',
-    list: [
-      {
-        title: 'Колонна',
-        icon: 'Column',
-        type: 'building'
-      },
-      {
-        title: 'Двустворчатая дверь',
-        icon: 'DoubleDoor',
-        type: 'building'
-      },
-      {
-        title: 'Двустворчатое окно',
-        icon: 'DoubleWindow',
-        type: 'building'
-      },
-      {
-        title: 'Одностворчатая дверь',
-        icon: 'SingleDoor',
-        type: 'building'
-      },
-      {
-        title: 'Одностворчатое окно',
-        icon: 'SingleWindow',
-        type: 'building'
-      }
-    ]
+    Column: {
+      title: 'Колонна',
+      icon: 'Column',
+      type: 'building'
+    },
+    DoubleDoor: {
+      title: 'Двустворчатая дверь',
+      icon: 'DoubleDoor',
+      type: 'building'
+    },
+    DoubleWindow: {
+      title: 'Двустворчатое окно',
+      icon: 'DoubleWindow',
+      type: 'building'
+    },
+    SingleDoor: {
+      title: 'Одностворчатая дверь',
+      icon: 'SingleDoor',
+      type: 'building'
+    },
+    SingleWindow: {
+      title: 'Одностворчатое окно',
+      icon: 'SingleWindow',
+      type: 'building'
+    }
   }
 }
 

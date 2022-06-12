@@ -23,7 +23,8 @@ import CombinedSensorIcon from '@/static/icons/sensor/9.png';
 import ElectricalContactSensorIcon from '@/static/icons/sensor/14.png';
 import ItinerarySensorIcon from '@/static/icons/sensor/1.png';
 import PiezoelectricSensorIcon from '@/static/icons/sensor/2.png';
-import {CircleSensor, LineSensor, Sensor, UPKSensor, Wire} from "../models/Sensor";
+import MagneticContactSensorIcon from '@/static/icons/sensor/16.png';
+import {CircleSensor, LineSensor, UPKSensor, Wire} from "../models/Sensor";
 import {Column, DoubleDoor, SingleDoor, SingleWindow, DoubleWindow, Wall} from "../models/Building";
 import UPK from "@/static/icons/sensor/15.png";
 import Info from "../models/Info";
@@ -51,6 +52,7 @@ export default {
       ElectricalContactSensorIcon: ElectricalContactSensorIcon,
       ItinerarySensorIcon: ItinerarySensorIcon,
       PiezoelectricSensorIcon: PiezoelectricSensorIcon,
+      MagneticContactSensorIcon: MagneticContactSensorIcon,
       UPK: UPK,
     },
 
@@ -69,15 +71,23 @@ export default {
       ElectricalContactSensorIcon: 'Точечный электроконтактный',
       ItinerarySensorIcon: 'Путевой конечный',
       PiezoelectricSensorIcon: 'Пьезоэлектрический',
+      MagneticContactSensorIcon: 'Магнитоконтактный',
       UPK: 'ПКП',
     },
 
     mouseEvents: {
       down: false,
+      wheel: {
+        status: false,
+        x: null,
+        y: null,
+      }
     },
 
     keyboardEvent: {
-      Control: false
+      Control: false,
+      Shift: false,
+      Escape: false
     },
 
     createWall: {
@@ -100,6 +110,10 @@ export default {
       return this.$store.getters['object/objectList'].building;
     },
 
+    layerStatus() {
+      return this.$store.getters['object/layerStatus'];
+    },
+
     sensorList() {
       return this.$store.getters['object/objectList'].sensors;
     },
@@ -109,7 +123,7 @@ export default {
     },
 
     amperagePKP() {
-      return this.pkp ?  this.pkp.voltage / this.pkp.resistance : '-';
+      return this.pkp ? this.pkp.voltage / this.pkp.resistance : '-';
     },
 
     amperageSensor() {
@@ -120,6 +134,10 @@ export default {
     wireSection() {
       return Info.sectionByAmperage(this.amperagePKP ? this.amperagePKP + this.amperageSensor : this.amperageSensor);
     },
+
+    fieldPosition() {
+      return this.$store.getters['object/fieldPosition'];
+    }
   },
 
   methods: {
@@ -129,14 +147,39 @@ export default {
 
     keyDown(event) {
       this.keyboardEvent[event.key] = true;
-/*
+
       if (this.keyboardEvent.Control && this.keyboardEvent.c) {
         this.$store.commit('object/copy')
       }
 
       if (this.keyboardEvent.Control && this.keyboardEvent.v) {
         this.$store.commit('object/paste')
-      }*/
+      }
+
+      if (this.keyboardEvent.Control && this.keyboardEvent.x) {
+        this.$store.commit('object/cut')
+      }
+
+      if (this.keyboardEvent.Escape) {
+        this.$store.commit('object/activateObject', {});
+        this.mouseEvents.down = {};
+
+        this.createWall = {
+          status: false,
+          path: [],
+          length: 0,
+          lastPoint: {}
+        };
+
+        this.createWire = {
+          status: false,
+          path: [],
+          length: 0,
+          lastPoint: {}
+        }
+      }
+
+      this.rerender();
     },
 
     keyUp(event) {
@@ -144,11 +187,22 @@ export default {
     },
 
     mouseUp(event) {
-      if (event.which !== 1) return;
+      if (event.which === 3 || event.which === 2) return;
+
+      this.mouseEvents.wheel = {};
+
+      if (event.which === 2) {
+        console.log(1111)
+        this.mouseEvents.wheel = {
+          status: false,
+          x: null,
+          y: null,
+        };
+      }
 
       this.mouseEvents.down = {};
 
-      if (this.keyboardEvent.Control && this.sensorList.some((sensor) => sensor.isHover(event.offsetX, event.offsetY)) && !this.createWall.status && !this.createWire.status) {
+      if (this.keyboardEvent.Shift && this.sensorList.some((sensor) => sensor.isHover(event.offsetX, event.offsetY)) && !this.createWall.status && !this.createWire.status && !this.layerStatus) {
         this.createWire = {
           status: true,
           path: [this.sensorList.filter((sensor) => sensor.isHover(event.offsetX, event.offsetY))[0]],
@@ -164,7 +218,7 @@ export default {
         return;
       }
 
-      if (this.createWall.status) {
+      if (this.createWall.status && this.layerStatus) {
         let buildingCoords = this.buildingList.filter((building) => building.linkHoverEffect(event.offsetX, event.offsetY))[0]
 
         if (buildingCoords) {
@@ -189,7 +243,7 @@ export default {
         }
       }
 
-      if (this.createWire.status) {
+      if (this.createWire.status && !this.layerStatus) {
         let sensorCoords = this.sensorList.filter((sensor) => sensor.isHover(event.offsetX, event.offsetY))[0]
 
         if (sensorCoords) {
@@ -219,12 +273,12 @@ export default {
           'sensors',
           new UPKSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.icon, this.objectTitleList[object.icon], object.opacityColor, object.color)
         ]);
-      } else if (object.type === 'circle' && this.$store.getters['object/projectCapacity'] > this.$store.getters['object/sensorsCount']) {
+      } else if (object.type === 'circle') {
         this.$store.commit('object/addObject', [
           'sensors',
           new CircleSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.icon, this.objectTitleList[object.icon], object.opacityColor, object.color)
         ]);
-      } else if (object.type === 'linear' && this.$store.getters['object/projectCapacity'] > this.$store.getters['object/sensorsCount']) {
+      } else if (object.type === 'linear') {
         this.$store.commit('object/addObject', [
           'sensors',
           new LineSensor(event.offsetX, event.offsetY, this.objects[object.icon], object.icon, this.objectTitleList[object.icon], object.opacityColor, object.color)
@@ -277,7 +331,16 @@ export default {
     },
 
     mouseDown(event) {
-      if (event.which !== 1) return;
+      if (event.which === 3 || event.which === 2) return;
+
+      if (event.which === 2) {
+        console.log(222)
+        this.mouseEvents.wheel = {
+          status: true,
+          x: event.offsetX,
+          y: event.offsetY,
+        }
+      }
 
       this.mouseEvents.down = {
         status: true,
@@ -293,7 +356,18 @@ export default {
       this.reset();
       this.$store.commit('object/saveObjectList');
 
-      if (this.createWall.status) {
+      if (this.mouseEvents.wheel.status) {
+        this.$store.commit(
+          'object/changeFieldPosition',
+          [event.offsetX, event.offsetY, this.mouseEvents.wheel.x, this.mouseEvents.wheel.y]
+        );
+        console.log(event.offsetX, event.offsetY)
+
+        this.mouseEvents.wheel.x = event.offsetX;
+        this.mouseEvents.wheel.y = event.offsetY;
+      }
+
+      if (this.createWall.status && this.layerStatus) {
         let path = new paper.Path();
         this.createWall.path.forEach((point) => path.add(new paper.Point(point.x, point.y)));
         const lastPoint = this.createWall.path[this.createWall.path.length - 1];
@@ -310,7 +384,7 @@ export default {
         path.strokeWidth = '10';
       }
 
-      if (this.createWire.status) {
+      if (this.createWire.status && !this.layerStatus) {
         let path = new paper.Path();
         this.createWire.path.forEach((point) => path.add(new paper.Point(point.x, point.y)));
         const lastPoint = {
@@ -343,11 +417,11 @@ export default {
       objectList.forEach((object, index) => {
         if (object.linkHoverEffect) object.linkHoverEffect(event.offsetX, event.offsetY);
 
-        if (object.isHover(event.offsetX, event.offsetY)) {
+        if (object.isHover(event.offsetX, event.offsetY) && ((this.layerStatus && type === 'building') || (!this.layerStatus && type === 'sensors'))) {
           object.hoverEffect(event.offsetX, event.offsetY);
         }
 
-        if (!this.createWall.status && !this.createWire.status) {
+        if (!this.createWall.status && !this.createWire.status  && ((this.layerStatus && type === 'building') || (!this.layerStatus && type === 'sensors'))) {
           if (this.mouseEvents.down.status && object.active && event.offsetX && event.offsetY) {
             this.$store.commit(
               'object/changePosition',
@@ -360,13 +434,15 @@ export default {
           }
         }
 
-        object.drawObject(this.wireSection);
+        object.drawObject({width: this.wireSection, fieldPosition: this.fieldPosition});
       })
     },
 
     removeActiveStatusOnList(objectList, type, event) {
+      const isClickOnSensor = objectList.some((object) => object.isHover(event.offsetX, event.offsetY));
+
       objectList.forEach((object, index) => {
-        if (!object.isHover(event.offsetX, event.offsetY) && !this.keyboardEvent.Control) {
+        if (!isClickOnSensor && !this.keyboardEvent.Shift) {
           this.$store.commit('object/activateObjectOnList', [object, false]);
         }
       })
@@ -374,7 +450,7 @@ export default {
 
     addActiveStatusOnList(objectList, type, event) {
       objectList.forEach((object, index) => {
-        if (object.isHover(event.offsetX, event.offsetY)) {
+        if (object.isHover(event.offsetX, event.offsetY)  && ((this.layerStatus && type === 'building') || (!this.layerStatus && type === 'sensors'))) {
           this.$store.commit('object/activateObjectOnList', [object, true]);
         }
       })
@@ -394,15 +470,15 @@ export default {
 .workingField {
   flex: 1;
   position: relative;
-  overflow: auto;
+  overflow: hidden;
 }
 
 canvas {
   position: absolute;
   top: 0;
   left: 0;
-  width: 10000px;
-  height: 10000px;
+  width: 2000px;
+  height: 2000px;
   background-color: #E5E5E5;
 }
 </style>

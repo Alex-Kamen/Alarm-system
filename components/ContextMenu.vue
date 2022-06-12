@@ -4,6 +4,9 @@
     <div class="menu__item" @click="groupObject">Сгруппировать</div>
     <div class="menu__item" @click="deleteGroupObject">Разгруппировать</div>
     <div class="menu__item" @click="rotateObject">Поворот</div>
+    <div class="menu__item" @click="copy">Копировать</div>
+    <div class="menu__item" @click="paste">Вставить</div>
+    <div class="menu__item" @click="cut">Вырезать</div>
   </div>
 </template>
 
@@ -30,6 +33,21 @@ export default {
 
     rotateObject() {
       this.$store.commit('object/rotateObject');
+      this.$emit('rerender');
+    },
+
+    copy() {
+      this.$store.commit('object/copy');
+      this.$emit('rerender');
+    },
+
+    paste() {
+      this.$store.commit('object/paste');
+      this.$emit('rerender');
+    },
+
+    cut() {
+      this.$store.commit('object/cut');
       this.$emit('rerender');
     }
   },

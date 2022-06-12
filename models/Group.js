@@ -46,8 +46,8 @@ export class SensorGroup extends Group {
     return this.list.some((sensor) => sensor.isHover(cursorX, cursorY));
   }
 
-  drawObject() {
-    this.list.forEach((sensor) => sensor.drawObject());
+  drawObject({fieldPosition}) {
+    this.list.forEach((sensor) => sensor.drawObject({fieldPosition}));
   }
 
   hoverEffect() {
@@ -100,7 +100,7 @@ export class BuildingGroup extends Group {
     return this.list.some((sensor) => sensor.isHover(cursorX, cursorY));
   }
 
-  drawObject() {
+  drawObject({fieldPosition}) {
     this.list.forEach((building) => building.drawObject());
   }
 

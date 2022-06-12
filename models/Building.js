@@ -57,10 +57,10 @@ export class Column extends Building {
       && this.x + this.width / 2 >= cursorX && this.y + this.height / 2 >= cursorY;
   }
 
-  drawObject() {
+  drawObject({fieldPosition}) {
     let path = new paper.Path.Rectangle(
-      new paper.Point(this.x - this.width / 2, this.y - this.height / 2),
-      new paper.Point(this.x + this.width / 2, this.y + this.height / 2)
+      new paper.Point((this.x + fieldPosition.x) - this.width / 2, (this.y + fieldPosition.y) - this.height / 2),
+      new paper.Point((this.x + fieldPosition.x) + this.width / 2, (this.y + fieldPosition.y) + this.height / 2)
     );
 
     path.fillColor = '#000000';
@@ -168,11 +168,11 @@ export class DoubleDoor extends Building {
       && this.x + this.width / 2 >= cursorX && this.y + this.height / 2 >= cursorY;
   }
 
-  drawObject() {
-    const x1 = this.x - this.width / 4 * (this.rotateCoefficient % 2 === 0) * (-1 * +(this.rotateCoefficient === 2) + +(this.rotateCoefficient === 0));
-    const x2 = this.x + this.width / 4 * (this.rotateCoefficient % 2 === 0) * (-1 * +(this.rotateCoefficient === 2) + +(this.rotateCoefficient === 0));
-    const y1 = this.y + this.height / 4  * (this.rotateCoefficient % 2 === 1) * (-1 * +(this.rotateCoefficient === 3) + +(this.rotateCoefficient === 1));
-    const y2 = this.y - this.height / 4  * (this.rotateCoefficient % 2 === 1) * (-1 * +(this.rotateCoefficient === 3) + +(this.rotateCoefficient === 1));
+  drawObject({fieldPosition}) {
+    const x1 = (this.x + fieldPosition.x) - this.width / 4 * (this.rotateCoefficient % 2 === 0) * (-1 * +(this.rotateCoefficient === 2) + +(this.rotateCoefficient === 0));
+    const x2 = (this.x + fieldPosition.x) + this.width / 4 * (this.rotateCoefficient % 2 === 0) * (-1 * +(this.rotateCoefficient === 2) + +(this.rotateCoefficient === 0));
+    const y1 = (this.y + fieldPosition.y) + this.height / 4  * (this.rotateCoefficient % 2 === 1) * (-1 * +(this.rotateCoefficient === 3) + +(this.rotateCoefficient === 1));
+    const y2 = (this.y + fieldPosition.y) - this.height / 4  * (this.rotateCoefficient % 2 === 1) * (-1 * +(this.rotateCoefficient === 3) + +(this.rotateCoefficient === 1));
 
     if (this.rotateCoefficient === 0 || this.rotateCoefficient === 2) {
       let door = new paper.Path.Arc(
@@ -320,11 +320,11 @@ export class SingleDoor extends Building {
       && this.x + this.width / 2 >= cursorX && this.y + this.height / 2 >= cursorY;
   }
 
-  drawObject() {
+  drawObject({fieldPosition}) {
     let door = new paper.Path.Arc(
-      new paper.Point(this.x + this.width / 2 * this.rotateCase[0], this.y + this.height / 2 * this.rotateCase[1]),
-      new paper.Point(Math.sqrt(2) / 2 * this.height * this.rotateCase[2] + this.x + this.width / 2 * this.rotateCase[3], Math.sqrt(2) / 2 * this.height * this.rotateCase[4] + this.y + this.height / 2 * this.rotateCase[5]),
-      new paper.Point(this.x + this.width / 2 * this.rotateCase[6], this.y + this.height / 2 * this.rotateCase[7])
+      new paper.Point((this.x + fieldPosition.x) + this.width / 2 * this.rotateCase[0], (this.y + fieldPosition.y) + this.height / 2 * this.rotateCase[1]),
+      new paper.Point(Math.sqrt(2) / 2 * this.height * this.rotateCase[2] + (this.x + fieldPosition.x) + this.width / 2 * this.rotateCase[3], Math.sqrt(2) / 2 * this.height * this.rotateCase[4] + (this.y + fieldPosition.y) + this.height / 2 * this.rotateCase[5]),
+      new paper.Point((this.x + fieldPosition.x) + this.width / 2 * this.rotateCase[6], (this.y + fieldPosition.y) + this.height / 2 * this.rotateCase[7])
     );
 
     door.add(new paper.Point(this.x + this.width / 2 * this.rotateCase[8], this.y + this.height / 2 * this.rotateCase[9]));
@@ -403,10 +403,10 @@ export class SingleWindow extends Building {
       && this.x + this.width / 2 >= cursorX && this.y + this.height / 2 >= cursorY;
   }
 
-  drawObject() {
+  drawObject({fieldPosition}) {
     let path = new paper.Path.Rectangle(
-      new paper.Point(this.x - this.width / 2, this.y - this.height / 2),
-      new paper.Point(this.x + this.width / 2, this.y + this.height / 2)
+      new paper.Point((this.x + fieldPosition.x) - this.width / 2, (this.y + fieldPosition.y) - this.height / 2),
+      new paper.Point((this.x + fieldPosition.x) + this.width / 2, (this.y + fieldPosition.y) + this.height / 2)
     );
 
     path.fillColor = '#ffffff';
@@ -484,11 +484,11 @@ export class DoubleWindow extends Building {
       && this.x + this.width / 2 >= cursorX && this.y + this.height / 2 >= cursorY;
   }
 
-  drawObject() {
+  drawObject({fieldPosition}) {
     if (this.rotateCoefficient === 0) {
       let path = new paper.Path.Rectangle(
-        new paper.Point(this.x + this.width / 2, this.y + this.height / 2),
-        new paper.Point(this.x, this.y - this.height / 2)
+        new paper.Point((this.x + fieldPosition.x) + this.width / 2, (this.y + fieldPosition.y) + this.height / 2),
+        new paper.Point((this.x + fieldPosition.x), (this.y + fieldPosition.y) - this.height / 2)
       );
 
       path.fillColor = '#ffffff';
@@ -496,8 +496,8 @@ export class DoubleWindow extends Building {
       path.strokeColor = '#000000';
 
       path = new paper.Path.Rectangle(
-        new paper.Point(this.x, this.y + this.height / 2),
-        new paper.Point(this.x - this.width / 2, this.y - this.height / 2)
+        new paper.Point((this.x + fieldPosition.x), (this.y + fieldPosition.y) + this.height / 2),
+        new paper.Point((this.x + fieldPosition.x) - this.width / 2, (this.y + fieldPosition.y) - this.height / 2)
       );
 
       path.fillColor = '#ffffff';
@@ -514,8 +514,8 @@ export class DoubleWindow extends Building {
       path.strokeColor = '#000000';
 
       path = new paper.Path.Rectangle(
-        new paper.Point(this.x - this.width / 2, this.y - this.height / 2),
-        new paper.Point(this.x + this.width / 2, this.y)
+        new paper.Point((this.x + fieldPosition.x) - this.width / 2, (this.y + fieldPosition.y) - this.height / 2),
+        new paper.Point((this.x + fieldPosition.x) + this.width / 2, (this.y + fieldPosition.y))
       );
 
       path.fillColor = '#ffffff';
@@ -604,9 +604,9 @@ export class Wall extends Building {
     return minX <= cursorX && minY <= cursorY && maxX >= cursorX && maxY >= cursorY;
   }
 
-  drawObject() {
+  drawObject({fieldPosition}) {
     let path = new paper.Path();
-    this.path.forEach((point) => path.add(new paper.Point(point.x, point.y)));
+    this.path.forEach((point) => path.add(new paper.Point((this.x + fieldPosition.x), (this.y + fieldPosition.y))));
 
     path.strokeColor = 'black';
     path.strokeWidth = this.width;

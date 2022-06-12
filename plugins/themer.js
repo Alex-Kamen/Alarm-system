@@ -27,6 +27,9 @@ import Wall from "../components/icons/buildings/Wall";
 import UPK from "../components/icons/sensors/UPK";
 import BurgerMenuIcon from "../components/icons/BurgerMenuIcon";
 import InfoIcon from "../components/icons/InfoIcon";
+import MagneticContactSensorIcon from "../components/icons/sensors/MagneticContactSensorIcon";
+import SensorIcon from "../components/icons/SensorIcon";
+import BuildingIcon from "../components/icons/BuildingIcon";
 
 Vue.use(Vuetify);
 
@@ -82,6 +85,9 @@ export default (ctx) => {
         PiezoelectricSensorIcon: {
           component: PiezoelectricSensorIcon
         },
+        MagneticContactSensorIcon: {
+          component: MagneticContactSensorIcon
+        },
         Column: {
           component: Column
         },
@@ -108,6 +114,12 @@ export default (ctx) => {
         },
         InfoIcon: {
           component: InfoIcon
+        },
+        SensorIcon: {
+          component: SensorIcon
+        },
+        BuildingIcon: {
+          component: BuildingIcon
         }
       },
     },

@@ -22,13 +22,13 @@ export class Sensor extends Element {
     return Math.sqrt(Math.pow(cursorX - this.x, 2) + Math.pow(cursorY - this.y,  2)) < 20;
   }
 
-  drawObject() {
+  drawObject({fieldPosition}) {
     let image = new Image(1, 1);
     image.src = this.icon
     let raster = new paper.Raster(image, new paper.Point(100, 100));
     raster.scale(0.4);
-    raster.position.x += this.x;
-    raster.position.y += this.y;
+    raster.position.x += (this.x + fieldPosition.x);
+    raster.position.y += (this.y + fieldPosition.y);
   }
 
   hoverEffect() {
@@ -206,13 +206,13 @@ export class Wire extends Sensor {
     this.type = 'wire';
   }
 
-  drawObject(width) {
+  drawObject({width, fieldPosition}) {
     let path = new paper.Path();
     this.path.forEach((point) => {
       if (point._x && point._y) {
-        path.add(new paper.Point(point._x, point._y))
+        path.add(new paper.Point((point._x + fieldPosition.x), (point._y + fieldPosition.y)))
       } else {
-        path.add(new paper.Point(point.x, point.y))
+        path.add(new paper.Point((point.x + fieldPosition.x), (point.y + fieldPosition.y)))
       }
     });
 
