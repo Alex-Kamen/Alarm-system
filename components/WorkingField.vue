@@ -24,10 +24,19 @@ import ElectricalContactSensorIcon from '@/static/icons/sensor/14.png';
 import ItinerarySensorIcon from '@/static/icons/sensor/1.png';
 import PiezoelectricSensorIcon from '@/static/icons/sensor/2.png';
 import MagneticContactSensorIcon from '@/static/icons/sensor/16.png';
-import {CircleSensor, LineSensor, UPKSensor, Wire} from "../models/Sensor";
-import {Column, DoubleDoor, SingleDoor, SingleWindow, DoubleWindow, Wall} from "../models/Building";
 import UPK from "@/static/icons/sensor/15.png";
 import Info from "../models/Info";
+import {UPKSensor} from "../models/Sensors/UPKSensor";
+import {CircleSensor} from "../models/Sensors/CircleSensor";
+import {LineSensor} from "../models/Sensors/LineSensor";
+import {DoubleDoor} from "../models/Buildings/DoubleDoor";
+import {Column} from "../models/Buildings/Column";
+import {SingleDoor} from "../models/Buildings/SingleDoor";
+import {SingleWindow} from "../models/Buildings/SingleWindow";
+import {DoubleWindow} from "../models/Buildings/DoubleWindow";
+import {Wire} from "../models/Sensors/Wire";
+import {Wall} from "../models/Buildings/Wall";
+import {RenderManager} from "../models/RenderManager";
 
 const paper = require('paper');
 
@@ -110,6 +119,10 @@ export default {
       return this.$store.getters['object/objectList'].building;
     },
 
+    objectList() {
+      return this.$store.getters['object/objectList'];
+    },
+
     layerStatus() {
       return this.$store.getters['object/layerStatus'];
     },
@@ -187,12 +200,11 @@ export default {
     },
 
     mouseUp(event) {
-      if (event.which === 3 || event.which === 2) return;
+      if (event.which === 3) return;
 
       this.mouseEvents.wheel = {};
 
       if (event.which === 2) {
-        console.log(1111)
         this.mouseEvents.wheel = {
           status: false,
           x: null,
@@ -331,7 +343,7 @@ export default {
     },
 
     mouseDown(event) {
-      if (event.which === 3 || event.which === 2) return;
+      if (event.which === 3) return;
 
       if (event.which === 2) {
         console.log(222)
@@ -356,7 +368,12 @@ export default {
       this.reset();
       this.$store.commit('object/saveObjectList');
 
-      if (this.mouseEvents.wheel.status) {
+      new RenderManager(this.objectList, this.fieldPosition)
+        .hover(event)
+        .activate()
+        .render();
+
+      /*if (this.mouseEvents.wheel.status) {
         this.$store.commit(
           'object/changeFieldPosition',
           [event.offsetX, event.offsetY, this.mouseEvents.wheel.x, this.mouseEvents.wheel.y]
@@ -410,7 +427,7 @@ export default {
       if (this.mouseEvents.down.status) {
         this.mouseEvents.down.x = event.offsetX;
         this.mouseEvents.down.y = event.offsetY;
-      }
+      }*/
     },
 
     drawObjectList(objectList, type, event = {}) {

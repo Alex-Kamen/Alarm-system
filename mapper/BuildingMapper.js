@@ -1,4 +1,9 @@
-import {Column, Wall, DoubleDoor, SingleDoor, SingleWindow, DoubleWindow} from "../models/Building";
+import {DoubleDoor} from "../models/Buildings/DoubleDoor";
+import {Column} from "../models/Buildings/Column";
+import {SingleDoor} from "../models/Buildings/SingleDoor";
+import {SingleWindow} from "../models/Buildings/SingleWindow";
+import {DoubleWindow} from "../models/Buildings/DoubleWindow";
+import {Wall} from "../models/Buildings/Wall";
 
 export class BuildingMapper {
   toObject(object) {

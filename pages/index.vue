@@ -41,7 +41,7 @@ export default {
       this.$store.commit('tab/active', localStorage.key(localStorage.length-1));
       this.$refs.canvas.rerender();
     } else {
-      this.$store.commit('tab/newTab', []);
+      this.$store.commit('tab/newTab', [null, {sensors: [], building: []}]);
     }
   }
 }

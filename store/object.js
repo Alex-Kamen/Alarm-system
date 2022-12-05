@@ -23,6 +23,7 @@ export const state = () => ({
 
 export const mutations = {
   setObjectList(state, objectList) {
+    console.log(objectList)
     state.objectList.sensors = objectList.sensors.map((sensor) => new SensorMapper().toObject(sensor));
     state.objectList.building = objectList.building.map((building) => new BuildingMapper().toObject(building));
   },

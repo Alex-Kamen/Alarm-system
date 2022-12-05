@@ -1,4 +1,8 @@
-import {CircleSensor, LineSensor, UPKSensor, Wire} from "../models/Sensor";
+import {UPKSensor} from "../models/Sensors/UPKSensor";
+import {CircleSensor} from "../models/Sensors/CircleSensor";
+import {LineSensor} from "../models/Sensors/LineSensor";
+import {Wire} from "../models/Sensors/Wire";
+
 
 export class SensorMapper {
   toObject(object) {

@@ -27,7 +27,7 @@ export default {
 
   methods: {
     newTab() {
-      this.$store.commit('tab/newTab', []);
+      this.$store.commit('tab/newTab', [null, {sensors: [], building: []}]);
       this.rerender();
     },
 
